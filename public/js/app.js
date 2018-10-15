@@ -36234,7 +36234,9 @@ var User = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this));
 
         _this.state = {
-            data: []
+            data: [],
+            url: '/api/users',
+            pagination: []
         };
         return _this;
     }
@@ -36242,14 +36244,43 @@ var User = function (_React$Component) {
     _createClass(User, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
+            this.fetchUsers();
+        }
+    }, {
+        key: 'fetchUsers',
+        value: function fetchUsers() {
             var $this = this;
 
-            axios.get('/api/users').then(function (response) {
+            axios.get(this.state.url).then(function (response) {
                 $this.setState({
-                    data: response.data
+                    //data: response.data.data,
+                    data: $this.state.data.length > 0 ? $this.state.data.concat(response.data.data) : response.data.data,
+                    url: response.data.next_page_url
                 });
+                $this.makePagination(response.data);
             }).catch(function (error) {
                 console.log(error);
+            });
+        }
+    }, {
+        key: 'loadMore',
+        value: function loadMore() {
+            this.setState({
+                url: this.state.pagination.next_page_url
+            });
+            this.fetchUsers();
+        }
+    }, {
+        key: 'makePagination',
+        value: function makePagination(data) {
+            var pagination = {
+                current_page: data.current_page,
+                last_page: data.last_page,
+                next_page_url: data.next_page_url,
+                prev_page_url: prev_page_url
+            };
+            this.setState({
+                pagination: pagination
             });
         }
     }, {
@@ -36308,6 +36339,11 @@ var User = function (_React$Component) {
                             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(UserRow, { key: i, i: i, user: user, object: _this2 });
                         })
                     )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.loadMore.bind(this) },
+                    'More'
                 )
             );
         }
