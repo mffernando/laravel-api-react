@@ -15,5 +15,6 @@ window.axios = require('axios');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-require('./components/Example');
+//require('./components/Example');
 require('./components/User');
+require('./components/Create');
